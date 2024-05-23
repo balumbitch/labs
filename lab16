@@ -1,0 +1,110 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Определение структуры узла
+typedef struct Node {
+    int data;
+    struct Node* next;
+} Node;
+
+// Определение структуры линейного списка
+typedef struct LinkedList {
+    Node* head;
+} LinkedList;
+
+// Функция для создания нового узла
+Node* create_node(int data) {
+    Node* new_node = (Node*)malloc(sizeof(Node));
+    new_node->data = data;
+    new_node->next = NULL;
+    return new_node;
+}
+
+// Функция для добавления узла в начало списка
+void prepend(LinkedList* list, int data) {
+    Node* new_node = create_node(data);
+    new_node->next = list->head;
+    list->head = new_node;
+}
+
+// Функция для печати списка
+void print_list(LinkedList* list) {
+    Node* temp = list->head;
+    while (temp != NULL) {
+        printf("%d -> ", temp->data);
+        temp = temp->next;
+    }
+    printf("NIL\n");
+}
+
+// Определение структуры связующего элемента
+typedef struct Connector {
+    LinkedList* even_list;
+    LinkedList* odd_list;
+} Connector;
+
+// Функция для создания и заполнения списков
+Connector* build_linked_lists() {
+    LinkedList* even_list = (LinkedList*)malloc(sizeof(LinkedList));
+    LinkedList* odd_list = (LinkedList*)malloc(sizeof(LinkedList));
+    even_list->head = NULL;
+    odd_list->head = NULL;
+    
+    int index = 1;
+    int number;
+    while (1) {
+        printf("Введите число (0 для окончания ввода): ");
+        if (scanf("%d", &number) != 1) {
+            printf("Введите целое число.\n");
+            while (getchar() != '\n'); // Очистка буфера ввода
+            continue;
+        }
+
+        if (number == 0) {
+            break;
+        }
+
+        if (index % 2 == 0) {
+            prepend(even_list, number); // Добавляем в начало списка четных номеров
+        } else {
+            prepend(odd_list, number); // Добавляем в начало списка нечетных номеров
+        }
+        
+        index++;
+    }
+    
+    Connector* connector = (Connector*)malloc(sizeof(Connector));
+    connector->even_list = even_list;
+    connector->odd_list = odd_list;
+    
+    return connector;
+}
+
+int main() {
+    Connector* connector = build_linked_lists();
+
+    printf("Первый список (четные номера):\n");
+    print_list(connector->even_list);
+
+    printf("Второй список (нечетные номера):\n");
+    print_list(connector->odd_list);
+    
+    // Освобождение памяти
+    // Здесь нужно освободить память для всех узлов и списков
+    Node* temp;
+    while (connector->even_list->head != NULL) {
+        temp = connector->even_list->head;
+        connector->even_list->head = connector->even_list->head->next;
+        free(temp);
+    }
+    while (connector->odd_list->head != NULL) {
+        temp = connector->odd_list->head;
+        connector->odd_list->head = connector->odd_list->head->next;
+        free(temp);
+    }
+    free(connector->even_list);
+    free(connector->odd_list);
+    free(connector);
+    
+    return 0;
+}
