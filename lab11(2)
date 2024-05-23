@@ -1,0 +1,51 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+
+#define MAX_SIZE 100
+
+int findMinPositive(int *arr, int size, int currentMin) {
+    if (size == 0) {
+        if (currentMin == INT_MAX) {
+            return -1; 
+        } else {
+            return currentMin;
+        }
+    }
+
+    if (arr[size - 1] > 0 && arr[size - 1] < currentMin) {
+        currentMin = arr[size - 1];
+    }
+
+    return findMinPositive(arr, size - 1, currentMin);
+}
+
+int main() {
+    int size;
+    printf("Введите размер массива: ");
+    scanf("%d", &size);
+
+    int *arr = (int *)malloc(size * sizeof(int));
+
+    for (int i = 0; i < size; ++i) {
+        arr[i] = rand() % 100 - 50; 
+    }
+
+    printf("Элементы массива: ");
+    for (int i = 0; i < size; ++i) {
+        printf("%d ", arr[i]);
+    }
+    printf("\n");
+
+    int minPositive = findMinPositive(arr, size, INT_MAX);
+
+    if (minPositive == -1) {
+        printf("В массиве нет положительных чисел.\n");
+    } else {
+        printf("Минимальный среди положительных чисел: %d\n", minPositive);
+    }
+
+    free(arr);
+
+    return 0;
+}
