@@ -1,0 +1,73 @@
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+ 
+// Структура для хранения информации о студенте 
+typedef struct { 
+    int id; 
+    char name[50]; 
+    char group[10]; 
+    float score; 
+} Student; 
+ 
+// Функция для добавления нового студента 
+void addStudent(Student **students, int *count, int id, const char *name, const char *group, float score) { 
+    *students = realloc(*students, (*count + 1) * sizeof(Student)); 
+    if (*students == NULL) { 
+        perror("Failed to reallocate memory"); 
+        exit(EXIT_FAILURE); 
+    } 
+    (*students)[*count].id = id; 
+    strcpy((*students)[*count].name, name); 
+    strcpy((*students)[*count].group, group); 
+    (*students)[*count].score = score; 
+    (*count)++; 
+} 
+ 
+// Функция для удаления студентов с баллом меньше 1 
+void removeLowScoringStudents(Student **students, int *count) { 
+    int newCount = 0; 
+    for (int i = 0; i < *count; i++) { 
+        if ((*students)[i].score >= 1) { 
+            (*students)[newCount++] = (*students)[i]; 
+        } 
+    } 
+    *students = realloc(*students, newCount * sizeof(Student)); 
+    if (*students == NULL && newCount > 0) { 
+        perror("Failed to reallocate memory"); 
+        exit(EXIT_FAILURE); 
+    } 
+    *count = newCount; 
+} 
+ 
+// Функция для вывода списка студентов 
+void printStudents(const Student *students, int count) { 
+    for (int i = 0; i < count; i++) { 
+        printf("ID: %d, Name: %s, Group: %s, Score: %.2f\n", students[i].id, students[i].name, students[i].group, students[i].score); 
+    } 
+} 
+ 
+int main() { 
+    Student *students = NULL; 
+    int studentCount = 0; 
+ 
+    // Пример добавления студентов 
+    addStudent(&students, &studentCount, 1, "Ivanov I.I.", "A1", 3.5); 
+    addStudent(&students, &studentCount, 2, "Petrov P.P.", "B2", 0.5); 
+    addStudent(&students, &studentCount, 3, "Sidorov S.S.", "C3", 2.0); 
+ 
+    // Вывод списка студентов перед удалением 
+    printf("Students list before removal:\n"); 
+    printStudents(students, studentCount); 
+ 
+    // Удаление студентов с баллом меньше 1 
+    removeLowScoringStudents(&students, &studentCount); 
+ 
+    // Вывод списка студентов после удаления 
+    printf("Students list after removal:\n"); 
+    printStudents(students, studentCount); 
+ 
+    // Освобождение памяти 
+    free(students); 
+    return 0; 
+}
