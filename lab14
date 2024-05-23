@@ -1,0 +1,65 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+
+// Функция для проверки, является ли символ числом
+int isNumber(char c) {
+    return isdigit(c) || c == '-' || c == '+'; 
+}
+
+// Функция для подсчета чисел в строке
+int countNumbersInLine(const char *line) {
+    int count = 0;
+    int inNumber = 0;
+    while (*line) { 
+        if (isNumber(*line)) {
+            if (!inNumber) {
+                count++;
+                inNumber = 1;
+            }
+        } else {
+            inNumber = 0;
+        }
+        line++;
+    }
+
+    return count;
+}
+ 
+int main() {
+    FILE *file;
+    char *filename = "textfile.txt";
+    char line[256];
+    int totalNumbers = 0;
+
+    // Открываем файл для чтения
+    file = fopen(filename, "r");
+    if (file == NULL) {
+        perror("Failed to open file for reading");
+        return EXIT_FAILURE;
+    }
+
+    // Подсчитываем количество чисел в файле
+    while (fgets(line, sizeof(line), file)) {
+        totalNumbers += countNumbersInLine(line);
+    }
+
+    // Закрываем файл после чтения
+    fclose(file);
+
+    // Открываем файл для добавления
+    file = fopen(filename, "a");
+    if (file == NULL) {
+        perror("Failed to open file for appending");
+        return EXIT_FAILURE;
+    }
+
+    // Записываем количество чисел в конец файла
+    fprintf(file, "\nTotal numbers: %d\n", totalNumbers);
+
+    // Закрываем файл после записи
+    fclose(file);
+
+    printf("Total numbers: %d\n", totalNumbers);
+    return 0;
+}
