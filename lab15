@@ -1,0 +1,70 @@
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+ 
+// Структура для хранения информации о маршруте 
+typedef struct { 
+    char start[100]; 
+    char end[100]; 
+    int routeNumber; 
+} Route; 
+ 
+void createFile() { 
+    FILE *file = fopen("Spravka.dat", "wb"); 
+    if (file == NULL) { 
+        perror("Failed to create file"); 
+        exit(EXIT_FAILURE); 
+    } 
+ 
+    Route routes[] = { 
+        {"CityA", "CityB", 1}, 
+        {"CityC", "CityD", 2}, 
+        {"CityE", "CityF", 3}, 
+        {"CityG", "CityH", 4} 
+    }; 
+     
+    size_t routeCount = sizeof(routes) / sizeof(routes[0]); 
+    fwrite(routes, sizeof(Route), routeCount, file); 
+    fclose(file); 
+} 
+ 
+ 
+ 
+void searchRoutes(const char *point) { 
+    FILE *file = fopen("Spravka.dat", "rb"); 
+    if (file == NULL) { 
+        perror("Failed to open file"); 
+        exit(EXIT_FAILURE); 
+    } 
+ 
+    Route route; 
+    int found = 0; 
+ 
+    while (fread(&route, sizeof(Route), 1, file)) { 
+        if (strcmp(route.start, point) == 0 || strcmp(route.end, point) == 0) { 
+            printf("Route %d: %s -> %s\n", route.routeNumber, route.start, route.end); 
+            found = 1; 
+        } 
+    } 
+ 
+    if (!found) { 
+        printf("No routes found starting or ending at %s\n", point); 
+    } 
+ 
+    fclose(file); 
+} 
+ 
+int main() { 
+    // Создаем файл с маршрутами 
+    createFile(); 
+ 
+    char point[100]; 
+    printf("Enter the point name to search for routes: "); 
+    fgets(point, sizeof(point), stdin); 
+    point[strcspn(point, "\n")] = '\0'; // Удаление символа новой строки 
+ 
+    // Поиск маршрутов 
+    searchRoutes(point); 
+ 
+    return 0; 
+}
