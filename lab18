@@ -1,0 +1,63 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+// Определение класса объекта
+class Object {
+public:
+    std::string type;
+    std::string engineType;
+
+    Object(std::string t, std::string e) : type(t), engineType(e) {}
+};
+
+int main() {
+    // Создание исходного вектора
+    std::vector<Object> originalVector;
+
+    // Запрос типов объектов у пользователя
+    std::string type, engineType;
+    std::cout << "Введите тип объекта ('стоп' для завершения ввода):\n";
+    while (true) {
+        std::cout << "Тип: ";
+        std::cin >> type;
+        if (type == "стоп") break;
+        std::cout << "Тип двигателя: ";
+        std::cin >> engineType;
+        originalVector.push_back(Object(type, engineType));
+    }
+
+    // Создание нового пустого вектора
+    std::vector<Object> newVector;
+
+    // Перепись объектов в новый вектор с определенными критериями
+    for (const auto& obj : originalVector) {
+        // Здесь можно добавить свои условия для переписи
+        if (obj.type == "наземное" && obj.engineType == "дизельный")
+         {
+            newVector.push_back(obj);
+        }
+        if (obj.type == "водное" && obj.engineType == "мотор")
+         {
+            newVector.push_back(obj);
+        }
+    }
+
+    // Проверка на пустоту нового вектора
+    if (!newVector.empty()) {
+        // Сортировка объектов в новом векторе
+        std::sort(newVector.begin(), newVector.end(), [](const Object& a, const Object& b) {
+            return a.engineType < b.engineType;
+        });
+
+        // Вывод отсортированных объектов
+        std::cout << "Отсортированные объекты в новом векторе:\n";
+        for (const auto& obj : newVector) {
+            std::cout << "Тип: " << obj.type << ", Тип двигателя: " << obj.engineType << "\n";
+        }
+    } else {
+        std::cout << "Новый вектор пуст.\n";
+    }
+
+    return 0;
+}
